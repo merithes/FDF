@@ -6,7 +6,7 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/29 12:37:51 by vboivin           #+#    #+#             */
-/*   Updated: 2017/03/29 19:34:31 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/03/29 21:21:48 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,12 @@ void			exits(int exnu)
 	exit(exnu);
 }
 
-static int		pull_event(int keycode, int *key)
+static int		pull_event(int keycode)
 {
-	return((*key = keycode));
+	printf("%d\n", keycode);
+	if (keycode == 53)
+		exits(3);
+	return(0);
 }
 
 void			set_coords(int coords[4], int xa, int ya, int xb, int yb)
@@ -38,18 +41,23 @@ void			set_coords(int coords[4], int xa, int ya, int xb, int yb)
 	coords[YB] = yb;
 }
 
-int				main(void ac, char **av)
+int				main(int ac, char **av)
 {
 	int			fildes;
+	int			test[4];
 	void		*p[2];
-	int			key;
 
 	if (ac < 1)
 		exits(2);
 	if ((fildes = open(av[1], O_RDONLY)) <= 0)
 		exits(fildes);
+	set_coords(test, 0, 0, 100, 100);
 	p[MLXID] = mlx_init();
 	p[WINID] = mlx_new_window(p[MLXID], WIDTH, HEIGHT, TITLE);
-	mlx_key_hook(p[WINID], pull_event, &key);
+	printf("ka\n");
+	rekt_angle(p, test, BLUU);
+	ft_drawline(p, test, CYAN);
+	//set_menu(p);
+	mlx_key_hook(p[WINID], pull_event, 0);
 	mlx_loop(p[MLXID]);
 }

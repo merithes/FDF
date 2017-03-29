@@ -6,7 +6,7 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/29 12:37:36 by vboivin           #+#    #+#             */
-/*   Updated: 2017/03/29 19:35:52 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/03/29 21:21:40 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,4 +76,31 @@ int					ft_drawline(void *p[2], int li[4], int color)
 ** Rectangles. Simple enough? 
 */
 
+int					rekt_angle(void *p[2], int rec[4], int color)
+{
+	int				xa;
+	int				xb;
+	int				ya;
+	int				yb;
 
+	printf("a\n");
+	color++;
+	(void)p;
+	xa = (rec[XA] > rec[XB]) ? rec[XB] : rec[XA];
+	ya = (rec[YA] > rec[YB]) ? rec[YB] : rec[YA];
+	xb = (rec[XA] > rec[XB]) ? rec[XA] : rec[XB];
+	yb = (rec[YA] > rec[YB]) ? rec[YA] : rec[YB];
+	printf("%d, %d, %d, %d.", xa, ya, xb, yb);
+	while (xa <= xb)
+	{
+		while (ya <= yb)
+		{
+			mlx_pixel_put(p[MLXID], p[WINID], xa, ya, color);
+			ya++;
+		}
+		ya = (rec[YA] > rec[YB]) ? rec[YB] : rec[YA];
+		xa++;
+	}
+	printf("a\n");
+	return (0);
+}
