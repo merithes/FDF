@@ -6,7 +6,7 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 14:46:20 by vboivin           #+#    #+#             */
-/*   Updated: 2017/03/29 10:52:47 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/03/29 19:31:08 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,16 +44,21 @@
 
 /*			TYPEDEF(s)				*/
 
-typedef struct		s_map
+typedef struct		s_coor
 {
-}					t_map;
+	int				coords[4];
+	struct s_coor	*right;
+	struct s_coor	*bottom;
+
+}					t_coor;
 
 /*			PROTOTYPES				*/
 int			ft_drawline(void *p[2], int line[4], int color);
-int			ft_rekt_angle(void *p[2], int coords[4], int color);
-int			set_menu(void *p[2]);
-int			dispall(void *p[2]);
+void		set_coords(int inp[4], int xa, int ya, int xb, int yb);
+//int			ft_rekt_angle(void *p[2], int coords[4], int color);
+//int			set_menu(void *p[2]);
+//int			dispall(void *p[2]);
 void		exits(int exnu);
-t_map		*stock_em(char *filename);
+//t_map		*stock_em(char *filename);
 
 #endif

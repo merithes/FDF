@@ -1,0 +1,79 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   draw.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/03/29 12:37:36 by vboivin           #+#    #+#             */
+/*   Updated: 2017/03/29 19:35:52 by vboivin          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "hFdF.h"
+
+static int			straight(void *p[2], int li[4], int color)
+{
+	int				xy;
+
+	if (li[XA] == li[XB])
+	{
+		xy = (li[YA] > li[YB] ? li[YB] : li[YA]);
+		while (xy <= li[YA] || xy <= li[YB])
+			mlx_pixel_put(p[MLXID], p[WINID], li[XA], xy++, color);
+		return (1);
+	}
+	xy = (li[XA] > li[XB] ? li[XB] : li[XA]);
+	while (xy < li[XA] || xy < li[XB])
+		mlx_pixel_put(p[MLXID], p[WINID], xy++, li[YA], color);
+	return (2);
+}
+
+static void			angled(void *p[2], int li[4], int color)
+{
+	double			coef;
+	int				i;
+	int				y;
+
+	coef = (double)(li[YB] - li[YA]) / (double)(li[XB] - li[XA]);
+	i = 0;
+	while (i + li[XA] <= li[XB])
+	{
+		y = coef * i;
+		mlx_pixel_put(p[MLXID], p[WINID], i + li[XA], y + li[YA], color);
+		i++;
+	}
+	printf("%f\n", coef);
+}
+
+/*
+**  The following function draws a line between two given points.
+*/
+
+int					ft_drawline(void *p[2], int li[4], int color)
+{
+	int				tmp;
+
+	if (li[XA] > li[XB])
+	{
+		tmp = li[XA];
+		li[XA] = li[XB];
+		li[XB] = tmp;
+		tmp = li[YA];
+		li[YA] = li[YB];
+		li[YB] = tmp;
+	}
+	if (li[XA] == li[XB] && li[YA] == li[YB])
+		mlx_pixel_put(p[MLXID], p[WINID], li[XA], li[YA], color);
+	else if (li[XA] == li[XB] || li[YA] == li[YB])
+		straight(p, li, color);
+	else
+		angled(p, li, color);
+	return (0);
+}
+
+/*
+** Rectangles. Simple enough? 
+*/
+
+
