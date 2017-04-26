@@ -6,7 +6,7 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/04 14:49:03 by vboivin           #+#    #+#             */
-/*   Updated: 2017/03/29 09:54:44 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/03/30 18:06:50 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <string.h>
+# include <stdio.h>
 
 typedef struct		s_list
 {
@@ -100,9 +101,11 @@ void				ft_lstiter(t_list *alst, void (*f)(t_list *elem));
 t_list				*ft_lstnew(void const *content, size_t content_size);
 t_list				*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
 
-/*					GET NEXT LINE					*/
+/*
+**		GET NEXT LINE
+*/
 
-# define BUFF_SIZE 10
+# define BUFF_SIZE 200
 
 typedef struct		s_mem
 {

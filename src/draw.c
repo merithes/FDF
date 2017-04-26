@@ -6,75 +6,91 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/29 12:37:36 by vboivin           #+#    #+#             */
-/*   Updated: 2017/03/30 12:21:20 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/04/26 19:25:39 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "hFdF.h"
 
-static int			straight(void *p[2], int li[4], int color)
+static int			straight(void *p[2], t_seg *seg, int color)
 {
 	int				xy;
 
-	if (li[XA] == li[XB])
+	if (seg->xa == seg->xb)
 	{
-		xy = (li[YA] > li[YB] ? li[YB] : li[YA]);
-		while (xy <= li[YA] || xy <= li[YB])
-			mlx_pixel_put(p[MLXID], p[WINID], li[XA], xy++, color);
+		xy = (seg->ya > seg->yb ? seg->yb : seg->ya);
+		while (xy <= seg->ya || xy <= seg->yb)
+			mlx_pixel_put(p[MLXID], p[WINID], seg->xa, xy++, color);
 		return (1);
 	}
-	xy = (li[XA] > li[XB] ? li[XB] : li[XA]);
-	while (xy < li[XA] || xy < li[XB])
-		mlx_pixel_put(p[MLXID], p[WINID], xy++, li[YA], color);
+	xy = (seg->xa > seg->xb ? seg->xb : seg->xa);
+	while (xy < seg->xa || xy < seg->xb)
+		mlx_pixel_put(p[MLXID], p[WINID], xy++, seg->ya, color);
 	return (2);
 }
 
-static void			angled(void *p[2], int li[4], int color)
+static void			angled(void *p[2], t_seg *seg, int col)
 {
 	double			coef;
 	int				i;
 	int				y;
+	int				ypp;
 
-	coef = (double)(li[YB] - li[YA]) / (double)(li[XB] - li[XA]);
+	coef = (double)(seg->yb - seg->ya) / (double)(seg->xb - seg->xa);
 	i = 0;
-	while (i + li[XA] <= li[XB])
+	while (i + seg->xa <= seg->xb)
 	{
 		y = coef * i;
-		mlx_pixel_put(p[MLXID], p[WINID], i + li[XA], y + li[YA], color);
+		ypp = coef * (i + 1);
+		mlx_pixel_put(p[MLXID], p[WINID], i + seg->xa, y + seg->ya, col);
+		while ((0 > coef && y > ypp && y + seg->ya > seg->yb) ||
+			(0 < coef && y < ypp && y + seg->ya < seg->yb))
+		{
+			if (y == ypp)
+				break ;
+			mlx_pixel_put(p[MLXID], p[WINID], i + seg->xa, y + seg->ya, col);
+			y += (coef >= 0) ? 1 : -1;
+		}
 		i++;
 	}
-	printf("%f\n", coef);
 }
 
 /*
-**  The following function draws a line between two given points.
-*/
+ **  The following function draws a line between two given points.
+ */
 
-int					ft_drawline(void *p[2], int li[4], int color)
+int					ft_drawline(void *p[2], t_seg *seg, int color)
 {
 	int				tmp;
 
-	if (li[XA] > li[XB])
+	if (seg->xa > seg->xb)
 	{
-		tmp = li[XA];
-		li[XA] = li[XB];
-		li[XB] = tmp;
-		tmp = li[YA];
-		li[YA] = li[YB];
-		li[YB] = tmp;
+		tmp = seg->xa;
+		seg->xa = seg->xb;
+		seg->xb = tmp;
+		tmp = seg->ya;
+		seg->ya = seg->yb;
+		seg->yb = tmp;
 	}
-	if (li[XA] == li[XB] && li[YA] == li[YB])
-		mlx_pixel_put(p[MLXID], p[WINID], li[XA], li[YA], color);
-	else if (li[XA] == li[XB] || li[YA] == li[YB])
-		straight(p, li, color);
+	if (seg->xa == seg->xb && seg->ya == seg->yb)
+	{
+		mlx_pixel_put(p[MLXID], p[WINID], seg->xa, seg->ya, color);
+	}
+	else if (seg->xa == seg->xb || seg->ya == seg->yb)
+	{
+		straight(p, seg, color);
+	}
 	else
-		angled(p, li, color);
+	{
+		angled(p, seg, color);
+	}
+	free(seg);
 	return (0);
 }
 
 /*
-** Rectangles. Simple enough?
-*/
+ ** Rectangles. Simple enough?
+ */
 
 int					rekt_angle(void *p[2], int rec[4], int color)
 {
@@ -88,7 +104,6 @@ int					rekt_angle(void *p[2], int rec[4], int color)
 	ya = (rec[YA] > rec[YB]) ? rec[YB] : rec[YA];
 	xb = (rec[XA] > rec[XB]) ? rec[XA] : rec[XB];
 	yb = (rec[YA] > rec[YB]) ? rec[YA] : rec[YB];
-	printf("%d, %d, %d, %d.\n", xa, ya, xb, yb);
 	while (xa <= xb)
 	{
 		while (ya <= yb)

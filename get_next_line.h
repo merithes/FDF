@@ -1,25 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   menu.c                                             :+:      :+:    :+:   */
+/*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/03/29 19:32:18 by vboivin           #+#    #+#             */
-/*   Updated: 2017/03/30 12:01:07 by vboivin          ###   ########.fr       */
+/*   Created: 2017/01/12 14:54:14 by vboivin           #+#    #+#             */
+/*   Updated: 2017/03/24 19:32:41 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "hFdF.h"
+#ifndef GET_NEXT_LINE_H
+# define GET_NEXT_LINE_H
+# define BUFF_SIZE 53
+# include "libft/libft.h"
+# include <unistd.h>
+# include <stdlib.h>
+# include <string.h>
 
-int				set_menu(void *p[2])
+typedef struct		s_mem
 {
-	int			coords[4];
+	char			*mem;
+	int				fd;
+	struct s_mem	*next;
+}					t_mem;
 
-	coords[XA] = 0;
-	coords[YA] = TOP_M;
-	coords[XB] = WIDTH;
-	coords[YB] = HEIGHT;
-	rekt_angle(p, coords, BACKG_COLOR);
-	return (0);
-}
+int					get_next_line(int fd, char **input);
+
+#endif

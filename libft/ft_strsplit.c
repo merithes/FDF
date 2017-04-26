@@ -6,7 +6,7 @@
 /*   By: vboivin <vboivin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/15 11:57:23 by vboivin           #+#    #+#             */
-/*   Updated: 2016/12/15 11:57:23 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/03/30 19:48:59 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ char		**ft_strsplit(char const *s, char c)
 	{
 		size = ft_tabsize((char *)s, c);
 		tab = (char **)malloc(sizeof(char *) * (size + 1));
+		ft_memset(tab, 0, sizeof(char *) * size + 1);
 		i = 0;
 		if (tab)
 		{

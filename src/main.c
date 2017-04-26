@@ -6,7 +6,7 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/29 12:37:51 by vboivin           #+#    #+#             */
-/*   Updated: 2017/04/03 15:56:31 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/04/26 19:27:10 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,35 @@ void			exits(int exnu)
 	exit(exnu);
 }
 
-static int		pull_event(int keycode)
+static void		redraw_quad(t_info *inf, int keycode)
 {
-	printf("%d\n", keycode);
+	draw_grid(inf, BLUU - 1 );
+	if (keycode == 125 || keycode == 126)
+		inf->z_coef += (keycode == 126) ? -1 : 1;
+	if (keycode == 123 || keycode == 124)
+		inf->rotx = (keycode == 123) ?
+			(inf->rotx - ANG_DIFF) % 360 : (inf->rotx + ANG_DIFF) % 360;
+	if (keycode == 6 || keycode == 7)
+		inf->roty += (keycode == 6) ?
+			(inf->rotx - ANG_DIFF % 360) : (inf->rotx + ANG_DIFF) % 360;
+	if (keycode == 0 || keycode == 2)
+		inf->margin_l += (keycode == 0) ? -MAR_DIFF: MAR_DIFF;
+	if (keycode == 1 || keycode == 13)
+		inf->margin_t += (keycode == 13) ? -MAR_DIFF: MAR_DIFF;
+	draw_grid(inf, GRIDCOL);
+}
+
+static int		pull_event(int keycode, void *param)
+{
+	t_info		*inf;
+
+	inf = (t_info *)param;
 	if (keycode == 53)
 		exits(3);
+	if ((123 <= keycode && keycode <= 126) || (0 <= keycode && keycode <= 2) ||
+			keycode == 13 || keycode == 7 || keycode == 6)
+		redraw_quad(inf, keycode);
+	printf("key #%d\n", keycode);
 	return (0);
 }
 
@@ -64,15 +88,13 @@ int				main(int ac, char **av)
 		exits(2);
 	if ((fildes = open(av[1], O_RDONLY)) <= 0)
 		exits(6);
+
 	remem(fildes, 1);
 	p[MLXID] = mlx_init();
 	p[WINID] = mlx_new_window(p[MLXID], WIDTH, HEIGHT, TITLE);
-	printf("ka\n");
-	set_menu(p);
-	printf("kb\n");
 	if (!(inf = get_map(fildes, p)))
 		exits(1000);
-	printf("kc\n");
-	mlx_key_hook(p[WINID], pull_event, 0);
-	mlx_loop(p[MLXID]);
+	draw_grid(inf, GRIDCOL);
+	printf("a:%d\n", mlx_key_hook(p[WINID], pull_event, inf));
+	printf("b:%d\n", mlx_loop(p[MLXID]));
 }

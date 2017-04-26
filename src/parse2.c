@@ -6,13 +6,13 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/29 19:31:46 by vboivin           #+#    #+#             */
-/*   Updated: 2017/04/05 15:37:04 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/04/06 11:05:25 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "hfdf.h"
 
-static int			check_range(t_list *inp)
+int					check_range(t_list *inp)
 {
 	int				i;
 
@@ -69,34 +69,44 @@ static int			*int_tab(char *inp, int len)
 	return (outp);
 }
 
-static int			into_int(t_list *inp)
+int					into_int(t_list *inp)
 {
 	int				i;
+	char			*tmp;
 	int				len;
 
 	i = 0;
+	tmp = NULL;
 	while (inp)
 	{
 		if (!(len = get_amnt((char *)inp->content)))
 			return (0);
+		tmp = (char *)inp->content;
 		inp->content = int_tab((char *)inp->content, len);
+		while (((int *)inp->content)[i] != END_F &&
+				((int *)inp->content)[i] != END_S)
+		{
+			i++;
+		}
+		if (tmp)
+			free(tmp);
 		inp = inp->next;
 	}
 	return (1);
 }
 
-t_pt				*transfo(t_list *inp)
+t_info				*free_stuff(t_list *inp)
 {
-	if (check_range(inp) != 1 || into_int(inp) != 1)
-		return (NULL);
-	int i = 0;
+	t_list			*nxt;
+
 	while (inp)
 	{
-		while (((int *)inp->content)[i + 1] != END_F && ((int *)inp->content)[i + 2] != END_S)
-			printf("%d ", ((int *)inp->content)[i++]);
-		printf("\n");
-		i = 0;
+		nxt = inp;
 		inp = inp->next;
+		if (nxt->content)
+			free(nxt->content);
+		if (nxt)
+			free(nxt);
 	}
 	return (NULL);
 }
