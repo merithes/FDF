@@ -37,19 +37,6 @@ static t_list		*readall(int fd)
 	return (outp);
 }
 
-static void			set_matrix(t_info *inp)
-{
-	int				i1;
-	int				i2;
-	int				i3;
-
-	i1 = -1;
-	while (++i1 < 3 && !(i2 = -1))
-		while (++i2 < 3 && !(i3 = -1))
-			while (++i3 < 2)
-				inp->mat[i1][i2][i3] = 0;
-}
-
 t_info				*get_map(int fd, void *p[2])
 {
 	t_info			*outp;
@@ -64,12 +51,12 @@ t_info				*get_map(int fd, void *p[2])
 	outp->z_coef = Z_CO;
 	outp->roty = ROT;
 	outp->rotx = ROT;
+	outp->len = 0;
 	if (!(tab = readall(fd)))
 		return (0);
-	if (check_range(tab) != 1 || into_int(tab) != 1)
+	if (check_range(tab) != 1 || (outp->height = into_int(tab) - 1) < 1)
 		return (free_stuff(tab));
-	if (!(outp->first_pt = to_pt_list(tab)))
+	if (!(outp->first_pt = to_pt_list(tab, outp)))
 		return (free_stuff(tab));
-	set_matrix(outp);
 	return (outp);
 }

@@ -106,7 +106,8 @@ int					get_next_line(int fd, char **line)
 		return (-1);
 	if (((i == 0) && !workon) || !workon[0])
 	{
-		return ((int)(line = NULL));
+		line = NULL;
+		return (0);
 	}
 	if (!(i = strchr_int(workon, '\n')))
 		i = ft_strlen(workon) + 1;

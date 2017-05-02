@@ -46,21 +46,18 @@ void			exits(int exnu)
 	exit(exnu);
 }
 
-static void		redraw_quad(t_info *inf, int keycode)
+static void		redraw_quad(t_info *inf, int kc)
 {
-	draw_grid(inf, BLUU - 1 );
-	if (keycode == 125 || keycode == 126)
-		inf->z_coef += (keycode == 126) ? -1 : 1;
-	if (keycode == 123 || keycode == 124)
-		inf->rotx = (keycode == 123) ?
+	draw_grid(inf, BLUU - 221);
+	if (kc == 125 || kc == 126 || kc == 65362 || kc == 65364)
+		inf->z_coef += (kc == 126 || kc == 65364) ? -1 : 1;
+	if (kc == 123 || kc == 124 || kc == 65361 || kc == 65363)
+		inf->rotx = (kc == 123 || kc == 65361) ?
 			(inf->rotx - ANG_DIFF) % 360 : (inf->rotx + ANG_DIFF) % 360;
-	if (keycode == 6 || keycode == 7)
-		inf->roty += (keycode == 6) ?
-			(inf->rotx - ANG_DIFF % 360) : (inf->rotx + ANG_DIFF) % 360;
-	if (keycode == 0 || keycode == 2)
-		inf->margin_l += (keycode == 0) ? -MAR_DIFF: MAR_DIFF;
-	if (keycode == 1 || keycode == 13)
-		inf->margin_t += (keycode == 13) ? -MAR_DIFF: MAR_DIFF;
+	if (kc == 0 || kc == 2 || kc == 113 ||kc == 100)
+		inf->margin_l += (kc == 0 ||kc == 113) ? -MAR_DIFF: MAR_DIFF;
+	if (kc == 1 || kc == 13 || kc == 115 || kc == 122)
+		inf->margin_t += (kc == 13 || kc == 122) ? -MAR_DIFF : MAR_DIFF;
 	draw_grid(inf, GRIDCOL);
 }
 
@@ -69,11 +66,9 @@ static int		pull_event(int keycode, void *param)
 	t_info		*inf;
 
 	inf = (t_info *)param;
-	if (keycode == 53)
+	if (keycode == 53 || keycode == 65307)
 		exits(3);
-	if ((123 <= keycode && keycode <= 126) || (0 <= keycode && keycode <= 2) ||
-			keycode == 13 || keycode == 7 || keycode == 6)
-		redraw_quad(inf, keycode);
+	redraw_quad(inf, keycode);
 	printf("key #%d\n", keycode);
 	return (0);
 }

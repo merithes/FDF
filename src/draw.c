@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "hFdF.h"
+#include "hfdf.h"
 
 static int			straight(void *p[2], t_seg *seg, int color)
 {

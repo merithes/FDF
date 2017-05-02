@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "hFdF.h"
+#include "hfdf.h"
 
 int				set_menu(void *p[2])
 {
@@ -38,7 +38,15 @@ void			wipe_wi(void *p[2])
 static t_seg	*set_seg(t_pt *a, t_pt *b, t_info *inf)
 {
 	t_seg		*outp;
+	int			an;
+	int			pta[2];
+	int			ptb[2];
 
+	pta[X] = D(a->x) - D(inf->len) / 2;
+	pta[Y] = D(a->y) - D(inf->height) / 2;
+	ptb[X] = D(b->x) - D(inf->len) / 2;
+	ptb[Y] = D(b->y) - D(inf->height) / 2;
+	an = inf->rotx;
 	if (!(outp = malloc(T_SEG)))
 		exits(1001);
 	if (!a || !b)
@@ -46,12 +54,10 @@ static t_seg	*set_seg(t_pt *a, t_pt *b, t_info *inf)
 		free(outp);
 		exits((!a) ? 1002 : 1003);
 	}
-	printf("%d\n", inf->rotx);
-	outp->xa = inf->margin_l + D(a->x) + RX(PYTH(D(a->x), D(a->y)), inf->rotx);
-	outp->ya = inf->margin_t + D(a->y) + RY(PYTH(D(a->x), D(a->y)), inf->rotx);
-	outp->xb = inf->margin_l + D(b->x) + RX(PYTH(D(b->x), D(b->y)), inf->rotx);
-	outp->yb = inf->margin_t + D(b->y) + RY(PYTH(D(b->x), D(b->y)), inf->rotx);
-//	printf("(%d;%d)(%d;%d)\n", outp->xa, outp->ya, outp->xb, outp->yb);
+	outp->xa = inf->margin_l + (pta[X] * COS(an) - pta[Y] * SIN(an));
+	outp->ya = inf->margin_t + (pta[X] * SIN(an) + pta[Y] * COS(an)) - a->z * inf->z_coef;
+	outp->xb = inf->margin_l + (ptb[X] * COS(an) - ptb[Y] * SIN(an));
+	outp->yb = inf->margin_t + (ptb[X] * SIN(an) + ptb[Y] * COS(an)) - b->z * inf->z_coef;
 	return (outp);
 }
 
@@ -68,6 +74,9 @@ void			draw_grid(t_info *inp, int color)
 		return ;
 	scroll_v = inp->first_pt;
 	scroll_h = scroll_v;
+	printf("sico(%f;%f)\n", SIN(inp->rotx), COS(inp->rotx));
+	printf("marg:(%d;%d)\n", inp->margin_l, inp->margin_t);
+	printf("maxdim:(%d:%d)\n", inp->len, inp->height);
 	while (scroll_v)
 	{
 		while (scroll_h)

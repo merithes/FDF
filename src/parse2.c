@@ -64,35 +64,31 @@ static int			*int_tab(char *inp, int len)
 		while (inp[i] != ' ' && inp[i])
 			i++;
 	}
-	outp[iout + 1] = END_F;
-	outp[iout + 2] = END_S;
+	outp[iout] = END_F;
+	outp[iout + 1] = END_S;
+	iout = 0;
 	return (outp);
 }
 
 int					into_int(t_list *inp)
 {
-	int				i;
 	char			*tmp;
 	int				len;
+	int				i;
 
 	i = 0;
 	tmp = NULL;
-	while (inp)
+	while (inp && ++i)
 	{
 		if (!(len = get_amnt((char *)inp->content)))
 			return (0);
 		tmp = (char *)inp->content;
 		inp->content = int_tab((char *)inp->content, len);
-		while (((int *)inp->content)[i] != END_F &&
-				((int *)inp->content)[i] != END_S)
-		{
-			i++;
-		}
 		if (tmp)
 			free(tmp);
 		inp = inp->next;
 	}
-	return (1);
+	return (i);
 }
 
 t_info				*free_stuff(t_list *inp)

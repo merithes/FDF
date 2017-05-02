@@ -21,7 +21,7 @@ static void			set_pt(t_pt *inp, int a, int b, int c)
 	inp->b = NULL;
 }
 
-static t_pt			*chain_layer(int *inp, int y)
+static t_pt			*chain_layer(int *inp, int y, t_info *toset)
 {
 	t_pt			*outp;
 	t_pt			*scroll;
@@ -29,7 +29,7 @@ static t_pt			*chain_layer(int *inp, int y)
 	int				i;
 
 	i = 0;
-	while (inp[i + 1] != END_F && inp[i + 2] != END_S)
+	while (inp[i] != END_F && inp[i + 1] != END_S)
 	{
 		prev = scroll;
 		if (!(scroll = malloc(T_PT)))
@@ -41,7 +41,9 @@ static t_pt			*chain_layer(int *inp, int y)
 		set_pt(scroll, i, y, inp[i]);
 		i++;
 	}
-	if (!inp)
+	if (toset->len < i)
+		toset->len = i-1;
+	if (inp)
 		free(inp);
 	return (outp);
 }
@@ -66,7 +68,7 @@ static void			link_chain(t_pt *inp)
 	}
 }
 
-t_pt				*to_pt_list(t_list *inp)
+t_pt				*to_pt_list(t_list *inp, t_info *toset)
 {
 	t_pt			*first;
 	t_pt			*layers;
@@ -75,13 +77,13 @@ t_pt				*to_pt_list(t_list *inp)
 
 	i = 0;
 	prev = inp;
-	if (!(first = chain_layer((int *)inp->content, 0)))
+	if (!(first = chain_layer((int *)inp->content, 0, toset)))
 		return (0);
 	inp = inp->next;
 	layers = first;
 	while (inp && ++i)
 	{
-		if (!(layers->b = chain_layer((int *)inp->content, i)))
+		if (!(layers->b = chain_layer((int *)inp->content, i, toset)))
 			return (0);
 		layers = layers->b;
 		free(prev);
