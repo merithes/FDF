@@ -3,7 +3,7 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: vboivin <marvin42.fr>                     +#+  +:+       +#+         #
+#    By: vboivin <marvin42.fr>                     +#+   +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/03/17 14:50:04 by vboivin           #+#    #+#              #
 #    Updated: 2017/04/07 13:12:35 by vboivin          ###   ########.fr        #
@@ -11,15 +11,15 @@
 # **************************************************************************** #
 
 NAME		= fdf
-HPATH		= ./includes/
+HPATH		= includes
 MLXPATH		= minilibx
-INC			= -I$(HPATH) -I./libft -I$(MLXPATH)
+INC			= -I$(HPATH) -Ilibft -I$(MLXPATH)
 FLAGS		= -Wall -Werror -Wextra
 FLAGSMLX	= -framework OpenGL -framework Appkit
 FLAGSX11	= -lXext -lX11 -lm 
 COMP		= gcc
 LIBFT		= -Llibft -lft
-MLX			= -L$(MLXPATH) -lmlx $(FLAGSX11)
+MLX			= -L$(MLXPATH) -lmlx
 
 SRCS 		= main.c draw.c disp_main.c parse.c parse2.c parse_chains.c
 DIR_SRC		= $(addprefix $(SRCPATH)/, $(SRCS))
@@ -37,20 +37,16 @@ $(OBJPATH)/%.o: $(SRCPATH)/%.c
 $(NAME): $(DIR_OBJ)
 	make -C libft
 	make -C $(MLXPATH)
-	$(COMP) $(DIR_OBJ) -o $(NAME) $(INC) $(LIBFT) $(FLAGS) $(MLX)
+	$(COMP) $(DIR_OBJ) -o $(NAME) $(INCMAC) $(LIBFT) $(FLAGS) $(MLX) $(FLAGSX11)
 
 clean:
-	make clean -C 
+	make clean -C $(MLXPATH)
 	make clean -C libft
 	rm -rf $(OBJ)
 
 fclean:
 	make clean -C $(MLXPATH)
 	make fclean -C libft
-	rm -f $(DIR_OBJ)
+	rm -rf $(DIR_OBJ)
 
 re: fclean all
-
-inc:
-	rm -rf $(OBJ) $(NAME)
-	make

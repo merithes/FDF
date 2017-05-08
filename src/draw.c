@@ -12,6 +12,19 @@
 
 #include "hfdf.h"
 
+void				put_word(void *p[2], int x, int y, char *inp)
+{
+	int				square[4];
+
+	square[XA] = x;
+	square[YA] = y;
+	square[XB] = ft_strlen(inp) * 6.6;
+	square[YB] = y + 10;
+
+	rekt_angle(p, square, 0xFEFEFE);
+	mlx_string_put(p[0], p[1], x + 1, y + 10, 0, inp);
+}
+
 static int			straight(void *p[2], t_seg *seg, int color)
 {
 	int				xy;
@@ -33,23 +46,22 @@ static void			angled(void *p[2], t_seg *seg, int col)
 {
 	double			coef;
 	int				i;
-	int				y;
-	int				ypp;
+	int				y[2];
 
 	coef = (double)(seg->yb - seg->ya) / (double)(seg->xb - seg->xa);
 	i = 0;
 	while (i + seg->xa <= seg->xb)
 	{
-		y = coef * i;
-		ypp = coef * (i + 1);
-		mlx_pixel_put(p[MLXID], p[WINID], i + seg->xa, y + seg->ya, col);
-		while ((0 > coef && y > ypp && y + seg->ya > seg->yb) ||
-			(0 < coef && y < ypp && y + seg->ya < seg->yb))
+		y[0] = coef * i;
+		y[1] = coef * (i + 1);
+		mlx_pixel_put(p[MLXID], p[WINID], i + seg->xa, y[0] + seg->ya, col);
+		while ((0 > coef && y[0] > y[1] && y[0] + seg->ya > seg->yb) ||
+			(0 < coef && y[0] < y[1] && y[0] + seg->ya < seg->yb))
 		{
-			if (y == ypp)
+			if (y[0] == y[1])
 				break ;
-			mlx_pixel_put(p[MLXID], p[WINID], i + seg->xa, y + seg->ya, col);
-			y += (coef >= 0) ? 1 : -1;
+			mlx_pixel_put(p[MLXID], p[WINID], i + seg->xa, y[0] + seg->ya, col);
+			y[0] += (coef >= 0) ? 1 : -1;
 		}
 		i++;
 	}

@@ -32,19 +32,19 @@
 /*
 ** COLORS
 */
-# define WHITE 0x00FFFFFF
-# define LI_RED 0xFF3333
+# define WHITE 0xFFFFFF
+# define LI_RED 0xFE3333
 
-# define BLUU 256
-# define REDD 0x00FF0000
-# define GRNN 0x0000FF00
-# define YELO 0x00FFFF00
+# define BLUU 255
+# define REDD 0xFE0000
+# define GRNN 0x00FE00
+# define YELO 0xFEFE00
 
-# define BLUE 0x004040FF
-# define CYAN 0x0000d5d8
-# define ORAN 0x00FF8800
+# define BLUE 0x4040FE
+# define CYAN 0x00d5d8
+# define ORAN 0xFE8800
 
-# define YEL_D 0X00333300
+# define YEL_D 0X333300
 
 /*
 ** OTHERS[DATA]
@@ -56,6 +56,7 @@
 
 # define X 0
 # define Y 1
+# define Z 2
 
 # define MLXID 0
 # define WINID 1
@@ -84,13 +85,18 @@
 
 # define D_P 20
 # define D(a) (a * D_P)
-# define MARGIN_TOP HEIGHT/4
-# define MARGIN_LEF WIDTH/4
+# define MARGIN_TOP HEIGHT/2
+# define MARGIN_LEF WIDTH/2
 # define Z_CO 0
-# define ROT 0
 
+# define ROTX 0
+# define ROTY 0
+# define ROTZ 0
+
+# define Z_DIFF 1
 # define ANG_DIFF 5
 # define MAR_DIFF 10
+# define ZOOM_DIFF 1
 
 /*
 ** TYPEDEF(s)
@@ -103,16 +109,17 @@ typedef struct		s_pt
 	int				z;
 	int				pos[2];
 	struct s_pt		*r;
-struct s_pt		*b;
-
+	struct s_pt		*b;
 }					t_pt;
 
 typedef struct		s_seg
 {
-	int				xa;
-	int				ya;
-	int				xb;
-	int				yb;
+	int	xa;
+	int	ya;
+	int	za;
+	int	xb;
+	int	yb;
+	int	zb;
 }					t_seg;
 
 typedef struct		s_info
@@ -122,11 +129,14 @@ typedef struct		s_info
 	int				z_coef;
 	int				rotx;
 	int				roty;
+	int				rotz;
 	void			*mid;
 	void			*wid;
 	struct s_pt		*first_pt;
 	int				len;
 	int				height;
+	int				zoom;
+	int				detail;
 }					t_info;
 
 
@@ -136,7 +146,7 @@ typedef struct		s_info
 int					ft_drawline(void *p[2], t_seg *seg, int color);
 void				set_coords(int inp[4], int xa, int ya, int xb, int yb);
 int					rekt_angle(void *p[2], int coords[4], int color);
-int					set_menu(void *p[2]);
+int					set_menu(t_info *inf);
 t_info				*get_map(int fildes, void *pointers[2]);
 void				exits(int exnu);
 int					remem(int inp_fd, int boo);
@@ -146,5 +156,6 @@ int					into_int(t_list *inp);
 t_info				*free_stuff(t_list *inp);
 t_pt				*to_pt_list(t_list *inp, t_info *toset);
 void				draw_grid(t_info *inp, int color);
+void				put_word(void *p[2], int x, int y, char *inp);
 
 #endif

@@ -12,41 +12,52 @@
 
 #include "hfdf.h"
 
-int				set_menu(void *p[2])
+int				set_menu(t_info *inf)
 {
-	int			coords[4];
+	int			y;
+	void		*p[2];
 
-	coords[XA] = 0;
-	coords[YA] = TOP_M;
-	coords[XB] = WIDTH;
-	coords[YB] = HEIGHT;
-	rekt_angle(p, coords, MENU_COLOR);
+	p[MLXID] = inf->mid;
+	p[WINID] = inf->wid;
+	y = HEIGHT - 20;
+	put_word(p, 5, y - 75, "Move: ZQSD/WASD");
+	put_word(p, 5, y - 60, "Zoom: WX/ZX");
+	put_word(p, 5, y - 45, "Rotate X: left/right arrows");
+	put_word(p, 5, y - 30, "Rotate Y: top/bottom page");
+	put_word(p, 5, y - 15, "Grow height: up/down arrows");
+	put_word(p, 5, y, "Activate polygon option: *");
 	return (0);
 }
 
-void			wipe_wi(void *p[2])
+static void		set_coordz(t_seg *inp, t_info *inf, double a[2], double b[2])
 {
-	int			coords[4];
+	int			an[3];
 
-	coords[XA] = 0;
-	coords[YA] = 0;
-	coords[XB] = WIDTH;
-	coords[YB] = TOP_M;
-	rekt_angle(p, coords, WALP_COLOR);
+	an[X] = inf->rotx;
+	an[Y] = inf->roty;
+	an[Z] = inf->rotz;
+	inp->xa = inf->margin_l + (a[X] * COS(an[X]) - a[Y] * SIN(an[X]));
+	inp->ya = inf->margin_t + ((a[X] * SIN(an[X]) + a[Y] * COS(an[X]))) *
+				COS(an[Y]) - a[Z] * inf->z_coef * SIN(an[Y]);
+	inp->za = a[Z];
+	inp->xb = inf->margin_l + (b[X] * COS(an[X]) - b[Y] * SIN(an[X]));
+	inp->yb = inf->margin_t + ((b[X] * SIN(an[X]) + b[Y] * COS(an[X]))) *
+				COS(an[Y]) - b[Z] * inf->z_coef * SIN(an[Y]);
+	inp->zb = b[Z];
 }
 
 static t_seg	*set_seg(t_pt *a, t_pt *b, t_info *inf)
 {
 	t_seg		*outp;
-	int			an;
-	int			pta[2];
-	int			ptb[2];
+	double		pta[3];
+	double		ptb[3];
 
-	pta[X] = D(a->x) - D(inf->len) / 2;
-	pta[Y] = D(a->y) - D(inf->height) / 2;
-	ptb[X] = D(b->x) - D(inf->len) / 2;
-	ptb[Y] = D(b->y) - D(inf->height) / 2;
-	an = inf->rotx;
+	pta[X] = inf->zoom * a->x - inf->len * inf->zoom / 2;
+	pta[Y] = inf->zoom * a->y - inf->height * inf->zoom / 2;
+	pta[Z] = (double)(inf->zoom * a->z)/32;
+	ptb[X] = inf->zoom * b->x - inf->len * inf->zoom / 2;
+	ptb[Y] = inf->zoom * b->y - inf->height * inf->zoom / 2;
+	ptb[Z] = (double)(inf->zoom * b->z)/32;
 	if (!(outp = malloc(T_SEG)))
 		exits(1001);
 	if (!a || !b)
@@ -54,11 +65,38 @@ static t_seg	*set_seg(t_pt *a, t_pt *b, t_info *inf)
 		free(outp);
 		exits((!a) ? 1002 : 1003);
 	}
-	outp->xa = inf->margin_l + (pta[X] * COS(an) - pta[Y] * SIN(an));
-	outp->ya = inf->margin_t + (pta[X] * SIN(an) + pta[Y] * COS(an)) - a->z * inf->z_coef;
-	outp->xb = inf->margin_l + (ptb[X] * COS(an) - ptb[Y] * SIN(an));
-	outp->yb = inf->margin_t + (ptb[X] * SIN(an) + ptb[Y] * COS(an)) - b->z * inf->z_coef;
+	set_coordz(outp, inf, pta, ptb);
 	return (outp);
+}
+
+
+void			draw_tool(void *p, t_pt *pt, int col, t_info *inf)
+{
+	int			i;
+
+	i = 0;
+	if (pt->b)
+	{
+		ft_drawline(p, set_seg(pt, pt->b, inf), col);
+		if (inf->detail && pt->b->r && pt->r && inf->z_coef && inf->roty &&
+				((pt->z != pt->b->z && pt->z != pt->r->z) ||
+					(pt->b->r->z != pt->b->z && pt->b->r->z != pt->r->z)) &&
+						(((pt->b->z != pt->r->z && pt->z != pt->b->r->z) ||
+							(pt->r->z == pt->b->z &&
+								pt->b->r->z - pt->z != pt->z - pt->r->z))))
+			ft_drawline(p, set_seg(pt, pt->b->r, inf), col + i++);
+	}
+	if (pt->r)
+	{
+		ft_drawline(p, set_seg(pt, pt->r, inf), col);
+		if (inf->detail && pt->r->b && pt->b && inf->z_coef && inf->roty &&
+				((pt->r->z != pt->r->b->z && pt->r->z != pt->z) ||
+					(pt->b->z != pt->r->b->z && pt->b->z != pt->z)) &&
+						(((pt->z != pt->r->b->z && pt->b->z != pt->r->z) ||
+							(pt->z == pt->b->r->z &&
+								pt->z - pt->r->z != pt->b->z - pt->z))) && !i)
+			ft_drawline(p, set_seg(pt->b, pt->r, inf), col);
+	}
 }
 
 void			draw_grid(t_info *inp, int color)
@@ -69,26 +107,18 @@ void			draw_grid(t_info *inp, int color)
 
 	p[WINID] = inp->wid;
 	p[MLXID] = inp->mid;
-//	wipe_wi(p);	
 	if (!inp)
 		return ;
 	scroll_v = inp->first_pt;
 	scroll_h = scroll_v;
-	printf("sico(%f;%f)\n", SIN(inp->rotx), COS(inp->rotx));
-	printf("marg:(%d;%d)\n", inp->margin_l, inp->margin_t);
-	printf("maxdim:(%d:%d)\n", inp->len, inp->height);
 	while (scroll_v)
 	{
 		while (scroll_h)
 		{
-			if (scroll_h->b)
-				ft_drawline(p, set_seg(scroll_h, scroll_h->b, inp), color);
-			if (scroll_h->r)
-				ft_drawline(p, set_seg(scroll_h, scroll_h->r, inp), color);
+			draw_tool(p, scroll_h, color, inp);
 			scroll_h = scroll_h->r;
 		}
 		scroll_v = scroll_v->b;
 		scroll_h = scroll_v;
 	}
-//	set_menu(p);
 }

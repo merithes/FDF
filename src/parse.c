@@ -49,9 +49,12 @@ t_info				*get_map(int fd, void *p[2])
 	outp->margin_t = MARGIN_TOP;
 	outp->margin_l = MARGIN_LEF;
 	outp->z_coef = Z_CO;
-	outp->roty = ROT;
-	outp->rotx = ROT;
+	outp->rotx = ROTX;
+	outp->roty = ROTY;
+	outp->rotz = ROTZ;
 	outp->len = 0;
+	outp->zoom = D_P;
+	outp->detail = 0;
 	if (!(tab = readall(fd)))
 		return (0);
 	if (check_range(tab) != 1 || (outp->height = into_int(tab) - 1) < 1)

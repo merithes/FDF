@@ -15,20 +15,16 @@
 int					check_range(t_list *inp)
 {
 	int				i;
+	char			*treat;
 
-	i = -1;
-	while (inp)
+	treat = (char *)inp->content;
+	while (inp && (i = -1))
 	{
-		while (((char *)inp->content)[++i] != 0)
-		{
-			if ((((char *)inp->content)[i] < '0' ||
-						((char *)inp->content)[i] > '9') &&
-							((char *)inp->content)[i] != '-' &&
-								((char *)inp->content)[i] != ' ')
+		while (treat[++i] != 0)
+			if ((treat[i] < '0' ||	treat[i] > '9') && treat[i] != '-' &&
+					treat[i] != ' ')
 				return (0);
-		}
 		inp = inp->next;
-		i = -1;
 	}
 	return (1);
 }
@@ -60,7 +56,10 @@ static int			*int_tab(char *inp, int len)
 	{
 		while (inp[i] == ' ')
 			i++;
-		outp[iout++] = ft_atoi(inp + i);
+		if (inp[i + 1] && inp[i + 1] == 'x')
+			outp[iout++] = strtol(inp + i, NULL, 16);
+		else
+			outp[iout++] = ft_atoi(inp + i);
 		while (inp[i] != ' ' && inp[i])
 			i++;
 	}

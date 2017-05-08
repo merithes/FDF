@@ -50,7 +50,10 @@ static void		redraw_quad(t_info *inf, int kc)
 {
 	draw_grid(inf, BLUU - 221);
 	if (kc == 125 || kc == 126 || kc == 65362 || kc == 65364)
-		inf->z_coef += (kc == 126 || kc == 65364) ? -1 : 1;
+		inf->z_coef += (kc == 126 || kc == 65364) ? -Z_DIFF : Z_DIFF;
+	if (kc == 65365 ||kc == 65366)
+		inf->roty = (kc == 65366) ?
+			(inf->roty - ANG_DIFF)%360 : (inf->roty + ANG_DIFF)%360;
 	if (kc == 123 || kc == 124 || kc == 65361 || kc == 65363)
 		inf->rotx = (kc == 123 || kc == 65361) ?
 			(inf->rotx - ANG_DIFF) % 360 : (inf->rotx + ANG_DIFF) % 360;
@@ -58,7 +61,17 @@ static void		redraw_quad(t_info *inf, int kc)
 		inf->margin_l += (kc == 0 ||kc == 113) ? -MAR_DIFF: MAR_DIFF;
 	if (kc == 1 || kc == 13 || kc == 115 || kc == 122)
 		inf->margin_t += (kc == 13 || kc == 122) ? -MAR_DIFF : MAR_DIFF;
+	if (kc == 119 || kc == 120)
+		inf->zoom += (kc == 119) ? -ZOOM_DIFF : ZOOM_DIFF;
+	if (kc == 60 || kc == 65506)
+		inf->rotz = (kc == 60) ?
+			(inf->rotz - ANG_DIFF) % 360 : (inf->rotz + ANG_DIFF) % 360;
+	if (kc == 42)
+		inf->detail = (inf->detail + 1) % 2;
+	if (inf->zoom < 0)
+		inf->zoom = 0;
 	draw_grid(inf, GRIDCOL);
+	set_menu(inf);
 }
 
 static int		pull_event(int keycode, void *param)
@@ -69,7 +82,6 @@ static int		pull_event(int keycode, void *param)
 	if (keycode == 53 || keycode == 65307)
 		exits(3);
 	redraw_quad(inf, keycode);
-	printf("key #%d\n", keycode);
 	return (0);
 }
 
@@ -90,6 +102,4 @@ int				main(int ac, char **av)
 	if (!(inf = get_map(fildes, p)))
 		exits(1000);
 	draw_grid(inf, GRIDCOL);
-	printf("a:%d\n", mlx_key_hook(p[WINID], pull_event, inf));
-	printf("b:%d\n", mlx_loop(p[MLXID]));
 }
