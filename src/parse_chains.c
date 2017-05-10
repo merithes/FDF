@@ -42,7 +42,7 @@ static t_pt			*chain_layer(int *inp, int y, t_info *toset)
 		i++;
 	}
 	if (toset->len < i)
-		toset->len = i-1;
+		toset->len = i - 1;
 	if (inp)
 		free(inp);
 	return (outp);

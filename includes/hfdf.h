@@ -81,7 +81,8 @@
 # define MENU_COLOR LI_RED
 # define WALP_COLOR 0x000033 
 
-# define GRIDCOL CYAN + 1
+# define DEF_COL CYAN
+# define DEF_COL_SEC 0xd510d8
 
 # define D_P 20
 # define D(a) (a * D_P)
@@ -91,12 +92,15 @@
 
 # define ROTX 0
 # define ROTY 0
-# define ROTZ 0
 
 # define Z_DIFF 1
 # define ANG_DIFF 5
 # define MAR_DIFF 10
 # define ZOOM_DIFF 1
+
+# define DETMODE 0
+# define GHMODE 0
+# define GHOST_COL 15
 
 /*
 ** TYPEDEF(s)
@@ -124,12 +128,14 @@ typedef struct		s_seg
 
 typedef struct		s_info
 {
+	int				ghost;
+	int				fd;
+	int				color;
 	int				margin_t;
 	int				margin_l;
 	int				z_coef;
 	int				rotx;
 	int				roty;
-	int				rotz;
 	void			*mid;
 	void			*wid;
 	struct s_pt		*first_pt;
@@ -143,19 +149,20 @@ typedef struct		s_info
 /*
 ** PROTOTYPES
 */
-int					ft_drawline(void *p[2], t_seg *seg, int color);
+
+void				free_all(t_info *inf);
+int					ft_drawline(void *p[2], t_info *inf, t_seg *seg);
 void				set_coords(int inp[4], int xa, int ya, int xb, int yb);
 int					rekt_angle(void *p[2], int coords[4], int color);
 int					set_menu(t_info *inf);
 t_info				*get_map(int fildes, void *pointers[2]);
-void				exits(int exnu);
-int					remem(int inp_fd, int boo);
+void				exits(int exnu, t_info *inf);
 t_pt				*transfo(t_list *inp);
 int					check_range(t_list *inp);
 int					into_int(t_list *inp);
 t_info				*free_stuff(t_list *inp);
 t_pt				*to_pt_list(t_list *inp, t_info *toset);
-void				draw_grid(t_info *inp, int color);
+void				draw_grid(t_info *inp);
 void				put_word(void *p[2], int x, int y, char *inp);
 
 #endif

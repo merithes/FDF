@@ -56,9 +56,7 @@ static int			*int_tab(char *inp, int len)
 	{
 		while (inp[i] == ' ')
 			i++;
-		if (inp[i + 1] && inp[i + 1] == 'x')
-			outp[iout++] = strtol(inp + i, NULL, 16);
-		else
+		if (inp[i] >= '0' && inp[i] <= '9')
 			outp[iout++] = ft_atoi(inp + i);
 		while (inp[i] != ' ' && inp[i])
 			i++;

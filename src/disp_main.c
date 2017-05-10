@@ -29,20 +29,19 @@ int				set_menu(t_info *inf)
 	return (0);
 }
 
-static void		set_coordz(t_seg *inp, t_info *inf, double a[2], double b[2])
+static void		set_coordz(t_seg *inp, t_info *inf, double a[3], double b[3])
 {
-	int			an[3];
+	int			na[3];
 
-	an[X] = inf->rotx;
-	an[Y] = inf->roty;
-	an[Z] = inf->rotz;
-	inp->xa = inf->margin_l + (a[X] * COS(an[X]) - a[Y] * SIN(an[X]));
-	inp->ya = inf->margin_t + ((a[X] * SIN(an[X]) + a[Y] * COS(an[X]))) *
-				COS(an[Y]) - a[Z] * inf->z_coef * SIN(an[Y]);
+	na[X] = inf->rotx;
+	na[Y] = inf->roty;
+	inp->ya = inf->margin_t + ((a[X] * SIN(na[X]) + a[Y] * COS(na[X]))) *
+				COS(na[Y]) - a[Z] * inf->z_coef * SIN(na[Y]);
+	inp->xa = inf->margin_l + (a[X] * COS(na[X]) - a[Y] * SIN(na[X]));
 	inp->za = a[Z];
-	inp->xb = inf->margin_l + (b[X] * COS(an[X]) - b[Y] * SIN(an[X]));
-	inp->yb = inf->margin_t + ((b[X] * SIN(an[X]) + b[Y] * COS(an[X]))) *
-				COS(an[Y]) - b[Z] * inf->z_coef * SIN(an[Y]);
+	inp->yb = inf->margin_t + ((b[X] * SIN(na[X]) + b[Y] * COS(na[X]))) *
+				COS(na[Y]) - b[Z] * inf->z_coef * SIN(na[Y]);
+	inp->xb = inf->margin_l + (b[X] * COS(na[X]) - b[Y] * SIN(na[X]));
 	inp->zb = b[Z];
 }
 
@@ -59,47 +58,47 @@ static t_seg	*set_seg(t_pt *a, t_pt *b, t_info *inf)
 	ptb[Y] = inf->zoom * b->y - inf->height * inf->zoom / 2;
 	ptb[Z] = (double)(inf->zoom * b->z)/32;
 	if (!(outp = malloc(T_SEG)))
-		exits(1001);
+		exits(1001, inf);
 	if (!a || !b)
 	{
 		free(outp);
-		exits((!a) ? 1002 : 1003);
+		exits((!a) ? 1002 : 1003, inf);
 	}
 	set_coordz(outp, inf, pta, ptb);
 	return (outp);
 }
 
 
-void			draw_tool(void *p, t_pt *pt, int col, t_info *inf)
+void			draw_tool(void *p, t_pt *pt, t_info *inf)
 {
 	int			i;
 
 	i = 0;
 	if (pt->b)
 	{
-		ft_drawline(p, set_seg(pt, pt->b, inf), col);
+		ft_drawline(p, inf, set_seg(pt, pt->b, inf));
 		if (inf->detail && pt->b->r && pt->r && inf->z_coef && inf->roty &&
 				((pt->z != pt->b->z && pt->z != pt->r->z) ||
 					(pt->b->r->z != pt->b->z && pt->b->r->z != pt->r->z)) &&
 						(((pt->b->z != pt->r->z && pt->z != pt->b->r->z) ||
 							(pt->r->z == pt->b->z &&
 								pt->b->r->z - pt->z != pt->z - pt->r->z))))
-			ft_drawline(p, set_seg(pt, pt->b->r, inf), col + i++);
+			ft_drawline(p, inf, set_seg(pt, pt->b->r, inf));
 	}
 	if (pt->r)
 	{
-		ft_drawline(p, set_seg(pt, pt->r, inf), col);
+		ft_drawline(p, inf, set_seg(pt, pt->r, inf));
 		if (inf->detail && pt->r->b && pt->b && inf->z_coef && inf->roty &&
 				((pt->r->z != pt->r->b->z && pt->r->z != pt->z) ||
 					(pt->b->z != pt->r->b->z && pt->b->z != pt->z)) &&
 						(((pt->z != pt->r->b->z && pt->b->z != pt->r->z) ||
 							(pt->z == pt->b->r->z &&
 								pt->z - pt->r->z != pt->b->z - pt->z))) && !i)
-			ft_drawline(p, set_seg(pt->b, pt->r, inf), col);
+			ft_drawline(p, inf, set_seg(pt->b, pt->r, inf));
 	}
 }
 
-void			draw_grid(t_info *inp, int color)
+void			draw_grid(t_info *inp)
 {
 	void		*p[2];
 	t_pt		*scroll_v;
@@ -115,7 +114,7 @@ void			draw_grid(t_info *inp, int color)
 	{
 		while (scroll_h)
 		{
-			draw_tool(p, scroll_h, color, inp);
+			draw_tool(p, scroll_h, inp);
 			scroll_h = scroll_h->r;
 		}
 		scroll_v = scroll_v->b;

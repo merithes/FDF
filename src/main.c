@@ -12,18 +12,7 @@
 
 #include "hfdf.h"
 
-int				remem(int inp_fd, int boo)
-{
-	static int	fd = -15;
-
-	if (boo == 1)
-		fd = inp_fd;
-	else
-		return (fd);
-	return (-1);
-}
-
-void			exits(int exnu)
+void			exits(int exnu, t_info *inf)
 {
 	if (exnu == 2)
 		ft_putstr("You just forgot to put any arguments. Smartass\n");
@@ -41,14 +30,19 @@ void			exits(int exnu)
 		ft_putnbr(exnu);
 		ft_putchar('\n');
 	}
-	if (!(remem(0, 0) == -1))
-		close(remem(0, 0));
+	if (inf)
+	{
+		close(inf->fd);
+		mlx_destroy_window(inf->mid, inf->wid);
+		free_all(inf);
+		free(inf);
+	}
 	exit(exnu);
 }
 
 static void		redraw_quad(t_info *inf, int kc)
 {
-	draw_grid(inf, BLUU - 221);
+	mlx_clear_window(inf->mid, inf->wid);
 	if (kc == 125 || kc == 126 || kc == 65362 || kc == 65364)
 		inf->z_coef += (kc == 126 || kc == 65364) ? -Z_DIFF : Z_DIFF;
 	if (kc == 65365 ||kc == 65366)
@@ -63,14 +57,11 @@ static void		redraw_quad(t_info *inf, int kc)
 		inf->margin_t += (kc == 13 || kc == 122) ? -MAR_DIFF : MAR_DIFF;
 	if (kc == 119 || kc == 120)
 		inf->zoom += (kc == 119) ? -ZOOM_DIFF : ZOOM_DIFF;
-	if (kc == 60 || kc == 65506)
-		inf->rotz = (kc == 60) ?
-			(inf->rotz - ANG_DIFF) % 360 : (inf->rotz + ANG_DIFF) % 360;
-	if (kc == 42)
-		inf->detail = (inf->detail + 1) % 2;
-	if (inf->zoom < 0)
-		inf->zoom = 0;
-	draw_grid(inf, GRIDCOL);
+	if (kc == 61)
+		inf->color = (inf->color == DEF_COL) ? DEF_COL_SEC : DEF_COL;
+	inf->detail = (kc == 42) ? (inf->detail + 1) % 2 : inf->detail;
+	inf->zoom = inf->zoom < 0 ? 0 : inf->zoom;
+	draw_grid(inf);
 	set_menu(inf);
 }
 
@@ -80,7 +71,7 @@ static int		pull_event(int keycode, void *param)
 
 	inf = (t_info *)param;
 	if (keycode == 53 || keycode == 65307)
-		exits(3);
+		exits(3, inf);
 	redraw_quad(inf, keycode);
 	return (0);
 }
@@ -92,14 +83,15 @@ int				main(int ac, char **av)
 	t_info		*inf;
 
 	if (ac < 1)
-		exits(2);
+		exits(2, NULL);
 	if ((fildes = open(av[1], O_RDONLY)) <= 0)
-		exits(6);
-
-	remem(fildes, 1);
+		exits(6, NULL);
 	p[MLXID] = mlx_init();
 	p[WINID] = mlx_new_window(p[MLXID], WIDTH, HEIGHT, TITLE);
 	if (!(inf = get_map(fildes, p)))
-		exits(1000);
-	draw_grid(inf, GRIDCOL);
+		exits(1000, NULL);
+	draw_grid(inf);
+	set_menu(inf);
+	mlx_key_hook(p[WINID], pull_event, inf);
+	mlx_loop(p[MLXID]);
 }

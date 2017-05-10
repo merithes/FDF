@@ -43,7 +43,7 @@ t_info				*get_map(int fd, void *p[2])
 	t_list			*tab;
 
 	if (!(outp = malloc(sizeof(t_info))))
-		exits(4);
+		exits(4, NULL);
 	outp->mid = p[MLXID];
 	outp->wid = p[WINID];
 	outp->margin_t = MARGIN_TOP;
@@ -51,10 +51,12 @@ t_info				*get_map(int fd, void *p[2])
 	outp->z_coef = Z_CO;
 	outp->rotx = ROTX;
 	outp->roty = ROTY;
-	outp->rotz = ROTZ;
 	outp->len = 0;
-	outp->zoom = D_P;
+	outp->zoom = sqrt(HEIGHT * HEIGHT + WIDTH * WIDTH) / (D_P * 2);
 	outp->detail = 0;
+	outp->fd = fd;
+	outp->ghost = 0;
+	outp->color = DEF_COL;
 	if (!(tab = readall(fd)))
 		return (0);
 	if (check_range(tab) != 1 || (outp->height = into_int(tab) - 1) < 1)
@@ -62,4 +64,24 @@ t_info				*get_map(int fd, void *p[2])
 	if (!(outp->first_pt = to_pt_list(tab, outp)))
 		return (free_stuff(tab));
 	return (outp);
+}
+
+void			free_all(t_info *inf)
+{
+	t_pt		*horizontal;
+	t_pt		*vertical;
+	t_pt		*swapper;
+
+	vertical = inf->first_pt;
+	while (vertical)
+	{
+		horizontal = vertical;
+		while(horizontal)
+		{
+			swapper = horizontal->r;
+			free(horizontal);
+			horizontal = swapper;
+		}
+		vertical = vertical->b;
+	}
 }

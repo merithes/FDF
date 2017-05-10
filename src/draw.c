@@ -12,6 +12,32 @@
 
 #include "hfdf.h"
 
+static int			color_mkr(t_seg *seg, t_info *inf, int x, int y)
+{
+	double			dist[2];
+	double			ptv[2];
+	int				outp;
+
+	if (inf->ghost == 1)
+		return (GHOST_COL);
+	ptv[X] = seg->xb - seg->xa;
+	ptv[Y] = seg->yb - seg->ya;
+	dist[0] = PYTH(ptv[X], ptv[Y]);
+	dist[1] = PYTH((double)x, (double)y);
+	if (seg->xb == seg->xa)
+		outp = (((y - seg->ya) / ptv[Y]) * seg->zb * inf->z_coef) +
+					(((ptv[Y] - y + seg->ya) / ptv[Y]) * seg->za * inf->z_coef);
+	else if (seg->yb == seg->ya)
+		outp = (((x - seg->xa) / ptv[X]) * seg->zb * inf->z_coef) +
+					(((ptv[X] - x + seg->xa) / ptv[X]) * seg->za * inf->z_coef);
+	else
+		outp = ((dist[1] / dist[0]) * seg->zb * inf->z_coef) +
+					(((dist[0] - dist[1]) / dist[0]) * seg->za * inf->z_coef);
+	outp *= (outp < 0) ? -1 : 1;
+	outp = (outp > 108) ? inf->color - 216 : inf->color - outp * 2;
+	return (outp);
+}
+
 void				put_word(void *p[2], int x, int y, char *inp)
 {
 	int				square[4];
@@ -25,24 +51,36 @@ void				put_word(void *p[2], int x, int y, char *inp)
 	mlx_string_put(p[0], p[1], x + 1, y + 10, 0, inp);
 }
 
-static int			straight(void *p[2], t_seg *seg, int color)
+static int			straight(void *p[2], t_info *inf, t_seg *seg)
 {
 	int				xy;
 
 	if (seg->xa == seg->xb)
 	{
-		xy = (seg->ya > seg->yb ? seg->yb : seg->ya);
-		while (xy <= seg->ya || xy <= seg->yb)
-			mlx_pixel_put(p[MLXID], p[WINID], seg->xa, xy++, color);
-		return (1);
+		xy = seg->ya;
+		while ((seg->ya > seg->yb && xy >= seg->yb) ||
+				(seg ->ya <= seg->yb && xy <= seg->yb))
+		{
+			mlx_pixel_put(p[MLXID], p[WINID], seg->xa, xy,
+					color_mkr(seg, inf, seg->xa, xy));
+			xy += (seg->ya > seg->yb) ? -1 : 1;
+		}
 	}
-	xy = (seg->xa > seg->xb ? seg->xb : seg->xa);
-	while (xy < seg->xa || xy < seg->xb)
-		mlx_pixel_put(p[MLXID], p[WINID], xy++, seg->ya, color);
-	return (2);
+	else
+	{
+		xy = seg->xa;
+		while ((seg->xa > seg->xb && xy >= seg->xb) ||
+				(seg ->xa <= seg->xb && xy <= seg->xb))
+		{
+			mlx_pixel_put(p[MLXID], p[WINID], xy, seg->ya,
+					color_mkr(seg, inf, xy, seg->ya));
+			xy += (seg->xa > seg->xb) ? -1 : 1;
+		}
+	}
+	return (0);
 }
 
-static void			angled(void *p[2], t_seg *seg, int col)
+static void			angled(void *p[2], t_info *inf, t_seg *seg)
 {
 	double			coef;
 	int				i;
@@ -54,13 +92,15 @@ static void			angled(void *p[2], t_seg *seg, int col)
 	{
 		y[0] = coef * i;
 		y[1] = coef * (i + 1);
-		mlx_pixel_put(p[MLXID], p[WINID], i + seg->xa, y[0] + seg->ya, col);
+		mlx_pixel_put(p[MLXID], p[WINID], i + seg->xa, y[0] + seg->ya,
+			color_mkr(seg, inf, i, y[0]));
 		while ((0 > coef && y[0] > y[1] && y[0] + seg->ya > seg->yb) ||
 			(0 < coef && y[0] < y[1] && y[0] + seg->ya < seg->yb))
 		{
 			if (y[0] == y[1])
 				break ;
-			mlx_pixel_put(p[MLXID], p[WINID], i + seg->xa, y[0] + seg->ya, col);
+			mlx_pixel_put(p[MLXID], p[WINID], i + seg->xa, y[0] + seg->ya,
+				color_mkr(seg, inf, i, y[1]));
 			y[0] += (coef >= 0) ? 1 : -1;
 		}
 		i++;
@@ -71,7 +111,7 @@ static void			angled(void *p[2], t_seg *seg, int col)
  **  The following function draws a line between two given points.
  */
 
-int					ft_drawline(void *p[2], t_seg *seg, int color)
+int					ft_drawline(void *p[2], t_info *inf, t_seg *seg)
 {
 	int				tmp;
 
@@ -83,19 +123,14 @@ int					ft_drawline(void *p[2], t_seg *seg, int color)
 		tmp = seg->ya;
 		seg->ya = seg->yb;
 		seg->yb = tmp;
+		tmp = seg->za;
+		seg->za = seg->zb;
+		seg->zb = tmp;
 	}
-	if (seg->xa == seg->xb && seg->ya == seg->yb)
-	{
-		mlx_pixel_put(p[MLXID], p[WINID], seg->xa, seg->ya, color);
-	}
-	else if (seg->xa == seg->xb || seg->ya == seg->yb)
-	{
-		straight(p, seg, color);
-	}
+	if (seg->xa == seg->xb || seg->ya == seg->yb)
+		straight(p, inf, seg);
 	else
-	{
-		angled(p, seg, color);
-	}
+		angled(p, inf, seg);
 	free(seg);
 	return (0);
 }
