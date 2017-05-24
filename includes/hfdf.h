@@ -6,7 +6,7 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 14:46:20 by vboivin           #+#    #+#             */
-/*   Updated: 2017/05/24 18:02:47 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/05/24 18:26:19 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ typedef struct		s_info
 	struct s_pt		*first_pt;
 	int				len;
 	int				height;
-	double			zoom;
+	int				zoom;
 	int				detail;
 }					t_info;
 

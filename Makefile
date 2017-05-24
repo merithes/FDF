@@ -6,7 +6,7 @@
 #    By: vboivin <marvin42.fr>                     +#+   +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/03/17 14:50:04 by vboivin           #+#    #+#              #
-#    Updated: 2017/05/24 18:08:45 by vboivin          ###   ########.fr        #
+#    Updated: 2017/05/24 18:59:29 by vboivin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME		= fdf
 HPATH		= includes
 MLXPATH		= minilibx_macos
 INC			= -I$(HPATH) -Ilibft -I$(MLXPATH)
-FLAGS		= -Wall -Werror -Wextra
+FLAGS		= -Wall -Werror -Wextra -g
 FLAGSMLX	= -framework OpenGL -framework Appkit
 FLAGSX11	= -lXext -lX11 -lm 
 COMP		= gcc

@@ -6,7 +6,7 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/24 17:40:29 by vboivin           #+#    #+#             */
-/*   Updated: 2017/05/24 17:52:10 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/05/24 18:55:28 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ t_info				*get_map(int fd, void *p[2])
 		return (free_stuff(tab));
 	if (!(outp->first_pt = to_pt_list(tab, outp)))
 		return (free_stuff(tab));
-	create_image(outp);
 	return (outp);
 }
 

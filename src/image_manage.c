@@ -6,7 +6,7 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/24 17:27:47 by vboivin           #+#    #+#             */
-/*   Updated: 2017/05/24 17:28:00 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/05/24 18:27:03 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void				set_pixie(t_info *inf, int x, int y, unsigned int color)
 	int				len;
 	int				endi;
 
-	endi = (inf->img->end) ? -1 : 1;
+	endi = (!inf->img->end) ? -1 : 1;
 	i = 0;
 	len = inf->img->len / (inf->img->bpp / 8);
 	if (x < 0 || y < 0 || x >= WIDTH || y >= HEIGHT)
