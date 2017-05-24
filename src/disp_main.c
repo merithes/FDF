@@ -15,17 +15,14 @@
 int				set_menu(t_info *inf)
 {
 	int			y;
-	void		*p[2];
 
-	p[MLXID] = inf->mid;
-	p[WINID] = inf->wid;
 	y = HEIGHT - 20;
-	put_word(p, 5, y - 75, "Move: ZQSD/WASD");
-	put_word(p, 5, y - 60, "Zoom: WX/ZX");
-	put_word(p, 5, y - 45, "Rotate X: left/right arrows");
-	put_word(p, 5, y - 30, "Rotate Y: top/bottom page");
-	put_word(p, 5, y - 15, "Grow height: up/down arrows");
-	put_word(p, 5, y, "Activate polygon option: *");
+	put_word(inf, 5, y - 75, "Move: ZQSD/WASD");
+	put_word(inf, 5, y - 60, "Zoom: WX/ZX");
+	put_word(inf, 5, y - 45, "Rotate X: left/right arrows");
+	put_word(inf, 5, y - 30, "Rotate Y: top/bottom page");
+	put_word(inf, 5, y - 15, "Grow height: up/down arrows");
+	put_word(inf, 5, y, "Activate polygon option: *");
 	return (0);
 }
 
@@ -69,55 +66,54 @@ static t_seg	*set_seg(t_pt *a, t_pt *b, t_info *inf)
 }
 
 
-void			draw_tool(void *p, t_pt *pt, t_info *inf)
+void			draw_tool(t_pt *pt, t_info *inf)
 {
 	int			i;
 
 	i = 0;
 	if (pt->b)
 	{
-		ft_drawline(p, inf, set_seg(pt, pt->b, inf));
+		ft_drawline(inf, set_seg(pt, pt->b, inf));
 		if (inf->detail && pt->b->r && pt->r && inf->z_coef && inf->roty &&
 				((pt->z != pt->b->z && pt->z != pt->r->z) ||
 					(pt->b->r->z != pt->b->z && pt->b->r->z != pt->r->z)) &&
 						(((pt->b->z != pt->r->z && pt->z != pt->b->r->z) ||
 							(pt->r->z == pt->b->z &&
 								pt->b->r->z - pt->z != pt->z - pt->r->z))))
-			ft_drawline(p, inf, set_seg(pt, pt->b->r, inf));
+			ft_drawline(inf, set_seg(pt, pt->b->r, inf));
 	}
 	if (pt->r)
 	{
-		ft_drawline(p, inf, set_seg(pt, pt->r, inf));
+		ft_drawline(inf, set_seg(pt, pt->r, inf));
 		if (inf->detail && pt->r->b && pt->b && inf->z_coef && inf->roty &&
 				((pt->r->z != pt->r->b->z && pt->r->z != pt->z) ||
 					(pt->b->z != pt->r->b->z && pt->b->z != pt->z)) &&
 						(((pt->z != pt->r->b->z && pt->b->z != pt->r->z) ||
 							(pt->z == pt->b->r->z &&
 								pt->z - pt->r->z != pt->b->z - pt->z))) && !i)
-			ft_drawline(p, inf, set_seg(pt->b, pt->r, inf));
+			ft_drawline(inf, set_seg(pt->b, pt->r, inf));
 	}
 }
 
 void			draw_grid(t_info *inp)
 {
-	void		*p[2];
 	t_pt		*scroll_v;
 	t_pt		*scroll_h;
 
-	p[WINID] = inp->wid;
-	p[MLXID] = inp->mid;
 	if (!inp)
 		return ;
+	ft_bzero(inp->img->str, inp->img->len * HEIGHT);
 	scroll_v = inp->first_pt;
 	scroll_h = scroll_v;
 	while (scroll_v)
 	{
 		while (scroll_h)
 		{
-			draw_tool(p, scroll_h, inp);
+			draw_tool(scroll_h, inp);
 			scroll_h = scroll_h->r;
 		}
 		scroll_v = scroll_v->b;
 		scroll_h = scroll_v;
 	}
+	mlx_put_image_to_window(inp->mid, inp->wid, inp->img->pid, 0, 0);
 }

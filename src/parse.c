@@ -55,7 +55,6 @@ t_info				*get_map(int fd, void *p[2])
 	outp->zoom = sqrt(HEIGHT * HEIGHT + WIDTH * WIDTH) / (D_P * 2);
 	outp->detail = 0;
 	outp->fd = fd;
-	outp->ghost = 0;
 	outp->color = DEF_COL;
 	if (!(tab = readall(fd)))
 		return (0);
@@ -63,6 +62,7 @@ t_info				*get_map(int fd, void *p[2])
 		return (free_stuff(tab));
 	if (!(outp->first_pt = to_pt_list(tab, outp)))
 		return (free_stuff(tab));
+	create_image(outp);
 	return (outp);
 }
 

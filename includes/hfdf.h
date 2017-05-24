@@ -66,6 +66,7 @@
 
 # define T_PT sizeof(t_pt)
 # define T_SEG sizeof(t_seg)
+# define T_IMG sizeof(t_img)
 # define COS(angleDegrees) ((cos((angleDegrees) * M_PI / 180)))
 # define SIN(angleDegrees) ((sin((angleDegrees) * M_PI / 180)))
 # define RX(pt, a) (pt * (COS(a) - SIN(a)))
@@ -118,17 +119,26 @@ typedef struct		s_pt
 
 typedef struct		s_seg
 {
-	int	xa;
-	int	ya;
-	int	za;
-	int	xb;
-	int	yb;
-	int	zb;
+	int				xa;
+	int				ya;
+	int				za;
+	int				xb;
+	int				yb;
+	int				zb;
 }					t_seg;
+
+typedef struct		s_img
+{
+	void			*pid;
+	char			*str;
+	int				end;
+	int				bpp;
+	int				len;
+}					t_img;
 
 typedef struct		s_info
 {
-	int				ghost;
+	t_img			*img;
 	int				fd;
 	int				color;
 	int				margin_t;
@@ -145,15 +155,14 @@ typedef struct		s_info
 	int				detail;
 }					t_info;
 
-
 /*
 ** PROTOTYPES
 */
 
 void				free_all(t_info *inf);
-int					ft_drawline(void *p[2], t_info *inf, t_seg *seg);
+int					ft_drawline(t_info *inf, t_seg *seg);
 void				set_coords(int inp[4], int xa, int ya, int xb, int yb);
-int					rekt_angle(void *p[2], int coords[4], int color);
+int					rekt_angle(t_info *inf, int coords[4], int color);
 int					set_menu(t_info *inf);
 t_info				*get_map(int fildes, void *pointers[2]);
 void				exits(int exnu, t_info *inf);
@@ -163,6 +172,8 @@ int					into_int(t_list *inp);
 t_info				*free_stuff(t_list *inp);
 t_pt				*to_pt_list(t_list *inp, t_info *toset);
 void				draw_grid(t_info *inp);
-void				put_word(void *p[2], int x, int y, char *inp);
+void				put_word(t_info *inf, int x, int y, char *inp);
+void				create_image(t_info *inf);
+void				set_pixie(t_info *inf, int x, int y, unsigned int color);
 
 #endif

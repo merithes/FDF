@@ -21,7 +21,8 @@ COMP		= gcc
 LIBFT		= -Llibft -lft
 MLX			= -L$(MLXPATH) -lmlx
 
-SRCS 		= main.c draw.c disp_main.c parse.c parse2.c parse_chains.c
+SRCS 		= main.c draw.c disp_main.c parse.c parse2.c parse_chains.c \
+				image_manage.c
 DIR_SRC		= $(addprefix $(SRCPATH)/, $(SRCS))
 SRCPATH		= src
 
