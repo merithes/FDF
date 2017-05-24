@@ -6,13 +6,13 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/29 19:31:46 by vboivin           #+#    #+#             */
-/*   Updated: 2017/04/26 19:21:25 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/05/24 17:31:46 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "hfdf.h"
 
-static void			set_pt(t_pt *inp, int a, int b, int c)
+void				set_pt(t_pt *inp, int a, int b, int c)
 {
 	inp->x = a;
 	inp->y = b;
@@ -21,7 +21,7 @@ static void			set_pt(t_pt *inp, int a, int b, int c)
 	inp->b = NULL;
 }
 
-static t_pt			*chain_layer(int *inp, int y, t_info *toset)
+t_pt				*chain_layer(int *inp, int y, t_info *toset)
 {
 	t_pt			*outp;
 	t_pt			*scroll;
@@ -48,48 +48,30 @@ static t_pt			*chain_layer(int *inp, int y, t_info *toset)
 	return (outp);
 }
 
-static void			link_chain(t_pt *inp)
+int					set_menu(t_info *inf)
 {
-	t_pt			*scroller_u;
-	t_pt			*scroller_d;
-
-	while (inp)
-	{
-		scroller_u = inp;
-		scroller_d = inp->b;
-		while (scroller_u)
-		{
-			scroller_u->b = scroller_d;
-			scroller_u = scroller_u->r;
-			if (scroller_d)
-				scroller_d = scroller_d->r;
-		}
-		inp = inp->b;
-	}
-}
-
-t_pt				*to_pt_list(t_list *inp, t_info *toset)
-{
-	t_pt			*first;
-	t_pt			*layers;
-	t_list			*prev;
+	int				y;
 	int				i;
 
-	i = 0;
-	prev = inp;
-	if (!(first = chain_layer((int *)inp->content, 0, toset)))
-		return (0);
-	inp = inp->next;
-	layers = first;
-	while (inp && ++i)
-	{
-		if (!(layers->b = chain_layer((int *)inp->content, i, toset)))
-			return (0);
-		layers = layers->b;
-		free(prev);
-		prev = inp;
-		inp = inp->next;
-	}
-	link_chain(first);
-	return (first);
+	i = 5;
+	y = HEIGHT - 500;
+	put_word(inf, 5, y - i-- * SPACE, "Move: ZQSD/WASD");
+	put_word(inf, 5, y - i-- * SPACE, "Zoom: WX/ZX");
+	put_word(inf, 5, y - i-- * SPACE, "Rotate X: left/right arrows");
+	put_word(inf, 5, y - i-- * SPACE, "Rotate Y: top/bottom page");
+	put_word(inf, 5, y - i-- * SPACE, "Grow height: up/down arrows");
+	put_word(inf, 5, y - i-- * SPACE, "Activate polygon option: *");
+	return (0);
+}
+
+void				put_word(t_info *inf, int x, int y, char *inp)
+{
+	int				square[4];
+
+	square[XA] = x;
+	square[YA] = y;
+	square[XB] = ft_strlen(inp) * 10.5;
+	square[YB] = y + HEIGHT_W;
+	rekt_angle(inf, square, 0xFEFEFE);
+	mlx_string_put(inf->mid, inf->wid, x + 1, y - 3, 0x006e6e, inp);
 }

@@ -6,7 +6,7 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/29 12:37:36 by vboivin           #+#    #+#             */
-/*   Updated: 2017/04/26 19:25:39 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/05/24 17:22:33 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ static int			color_mkr(t_seg *seg, t_info *inf, int x, int y)
 	double			ptv[2];
 	int				outp;
 
+	if (!inf->detail)
+		return (inf->color);
 	ptv[X] = seg->xb - seg->xa;
 	ptv[Y] = seg->yb - seg->ya;
 	dist[0] = PYTH(ptv[X], ptv[Y]);
@@ -36,19 +38,6 @@ static int			color_mkr(t_seg *seg, t_info *inf, int x, int y)
 	return (outp);
 }
 
-void				put_word(t_info *inf, int x, int y, char *inp)
-{
-	int				square[4];
-
-	square[XA] = x;
-	square[YA] = y;
-	square[XB] = ft_strlen(inp) * 6.6;
-	square[YB] = y + 10;
-
-	rekt_angle(inf, square, 0xFEFEFE);
-	mlx_string_put(inf->mid, inf->wid, x + 1, y + 10, 0, inp);
-}
-
 static int			straight(t_info *inf, t_seg *seg)
 {
 	int				xy;
@@ -57,7 +46,7 @@ static int			straight(t_info *inf, t_seg *seg)
 	{
 		xy = seg->ya;
 		while ((seg->ya > seg->yb && xy >= seg->yb) ||
-				(seg ->ya <= seg->yb && xy <= seg->yb))
+				(seg->ya <= seg->yb && xy <= seg->yb))
 		{
 			set_pixie(inf, seg->xa, xy,
 					color_mkr(seg, inf, seg->xa, xy));
@@ -68,7 +57,7 @@ static int			straight(t_info *inf, t_seg *seg)
 	{
 		xy = seg->xa;
 		while ((seg->xa > seg->xb && xy >= seg->xb) ||
-				(seg ->xa <= seg->xb && xy <= seg->xb))
+				(seg->xa <= seg->xb && xy <= seg->xb))
 		{
 			set_pixie(inf, xy, seg->ya, color_mkr(seg, inf, xy, seg->ya));
 			xy += (seg->xa > seg->xb) ? -1 : 1;
@@ -105,12 +94,13 @@ static void			angled(t_info *inf, t_seg *seg)
 }
 
 /*
- **  The following function draws a line between two given points.
- */
+**  The following function draws a line between two given points.
+*/
 
 int					ft_drawline(t_info *inf, t_seg *seg)
 {
 	int				tmp;
+
 	if (seg->xa > seg->xb)
 	{
 		tmp = seg->xa;
@@ -132,8 +122,8 @@ int					ft_drawline(t_info *inf, t_seg *seg)
 }
 
 /*
- ** Rectangles. Simple enough?
- */
+** Rectangles. Simple enough?
+*/
 
 int					rekt_angle(t_info *inf, int rec[4], int color)
 {

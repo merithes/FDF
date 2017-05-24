@@ -6,25 +6,11 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/29 19:32:18 by vboivin           #+#    #+#             */
-/*   Updated: 2017/04/26 19:47:20 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/05/24 17:19:37 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "hfdf.h"
-
-int				set_menu(t_info *inf)
-{
-	int			y;
-
-	y = HEIGHT - 20;
-	put_word(inf, 5, y - 75, "Move: ZQSD/WASD");
-	put_word(inf, 5, y - 60, "Zoom: WX/ZX");
-	put_word(inf, 5, y - 45, "Rotate X: left/right arrows");
-	put_word(inf, 5, y - 30, "Rotate Y: top/bottom page");
-	put_word(inf, 5, y - 15, "Grow height: up/down arrows");
-	put_word(inf, 5, y, "Activate polygon option: *");
-	return (0);
-}
 
 static void		set_coordz(t_seg *inp, t_info *inf, double a[3], double b[3])
 {
@@ -50,10 +36,10 @@ static t_seg	*set_seg(t_pt *a, t_pt *b, t_info *inf)
 
 	pta[X] = inf->zoom * a->x - inf->len * inf->zoom / 2;
 	pta[Y] = inf->zoom * a->y - inf->height * inf->zoom / 2;
-	pta[Z] = (double)(inf->zoom * a->z)/32;
+	pta[Z] = (double)(inf->zoom * a->z) / 32;
 	ptb[X] = inf->zoom * b->x - inf->len * inf->zoom / 2;
 	ptb[Y] = inf->zoom * b->y - inf->height * inf->zoom / 2;
-	ptb[Z] = (double)(inf->zoom * b->z)/32;
+	ptb[Z] = (double)(inf->zoom * b->z) / 32;
 	if (!(outp = malloc(T_SEG)))
 		exits(1001, inf);
 	if (!a || !b)
@@ -64,7 +50,6 @@ static t_seg	*set_seg(t_pt *a, t_pt *b, t_info *inf)
 	set_coordz(outp, inf, pta, ptb);
 	return (outp);
 }
-
 
 void			draw_tool(t_pt *pt, t_info *inf)
 {
@@ -80,7 +65,7 @@ void			draw_tool(t_pt *pt, t_info *inf)
 						(((pt->b->z != pt->r->z && pt->z != pt->b->r->z) ||
 							(pt->r->z == pt->b->z &&
 								pt->b->r->z - pt->z != pt->z - pt->r->z))))
-			ft_drawline(inf, set_seg(pt, pt->b->r, inf));
+			ft_drawline(inf, set_seg(pt, pt->b->r, inf + i++));
 	}
 	if (pt->r)
 	{
@@ -115,5 +100,6 @@ void			draw_grid(t_info *inp)
 		scroll_v = scroll_v->b;
 		scroll_h = scroll_v;
 	}
+	set_menu(inp);
 	mlx_put_image_to_window(inp->mid, inp->wid, inp->img->pid, 0, 0);
 }

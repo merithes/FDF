@@ -6,7 +6,7 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/29 19:31:46 by vboivin           #+#    #+#             */
-/*   Updated: 2017/04/06 11:05:25 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/05/24 17:30:31 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int					check_range(t_list *inp)
 	while (inp && (i = -1))
 	{
 		while (treat[++i] != 0)
-			if ((treat[i] < '0' ||	treat[i] > '9') && treat[i] != '-' &&
+			if ((treat[i] < '0' || treat[i] > '9') && treat[i] != '-' &&
 					treat[i] != ' ')
 				return (0);
 		inp = inp->next;

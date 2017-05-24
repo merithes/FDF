@@ -6,7 +6,7 @@
 #    By: vboivin <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/12/02 19:24:22 by vboivin           #+#    #+#              #
-#    Updated: 2017/03/29 11:49:07 by vboivin          ###   ########.fr        #
+#    Updated: 2017/05/24 18:04:48 by vboivin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,9 +36,13 @@ HEADERS = .
 all: $(NAME)
 
 %.o: %.c libft.h Makefile
+	@printf "libft:\tcompiling $< \r"
 	@gcc -Wall -Werror -Wextra -c $< -o $@ -I .
+	@printf "\r\t                                                         \r"
 
 $(NAME): $(SRCO)
+	@printf "\r\t                                                         \r"
+	@printf "libft:\tdone\n"
 	@ar rc $(NAME) $(SRCO)
 	@ranlib $(NAME)
 

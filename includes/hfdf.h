@@ -6,7 +6,7 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 14:46:20 by vboivin           #+#    #+#             */
-/*   Updated: 2017/04/26 20:35:13 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/05/24 18:02:47 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@
 ** WINDOW PROPERTIES
 */
 # define TITLE "title goes there"
-# define WIDTH 800
-# define HEIGHT 400
+# define WIDTH 1920
+# define HEIGHT 1080
 # define TOP_SP HEIGHT -HEIGHT_M
 
 /*
@@ -80,7 +80,7 @@
 # define HEIGHT_M 300
 # define TOP_M HEIGHT - HEIGHT_M
 # define MENU_COLOR LI_RED
-# define WALP_COLOR 0x000033 
+# define WALP_COLOR 0x000033
 
 # define DEF_COL CYAN
 # define DEF_COL_SEC 0xd510d8
@@ -95,13 +95,13 @@
 # define ROTY 0
 
 # define Z_DIFF 1
-# define ANG_DIFF 5
+# define ANG_DIFF 1
 # define MAR_DIFF 10
 # define ZOOM_DIFF 1
 
 # define DETMODE 0
-# define GHMODE 0
-# define GHOST_COL 15
+# define SPACE 30
+# define HEIGHT_W 15
 
 /*
 ** TYPEDEF(s)
@@ -151,7 +151,7 @@ typedef struct		s_info
 	struct s_pt		*first_pt;
 	int				len;
 	int				height;
-	int				zoom;
+	double			zoom;
 	int				detail;
 }					t_info;
 
@@ -160,6 +160,8 @@ typedef struct		s_info
 */
 
 void				free_all(t_info *inf);
+void				set_pt(t_pt *inp, int a, int b, int c);
+t_pt				*chain_layer(int *inp, int y, t_info *toset);
 int					ft_drawline(t_info *inf, t_seg *seg);
 void				set_coords(int inp[4], int xa, int ya, int xb, int yb);
 int					rekt_angle(t_info *inf, int coords[4], int color);

@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/03/29 19:31:46 by vboivin           #+#    #+#             */
-/*   Updated: 2017/04/26 19:26:27 by vboivin          ###   ########.fr       */
+/*   Created: 2017/05/24 17:40:29 by vboivin           #+#    #+#             */
+/*   Updated: 2017/05/24 17:52:10 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ t_info				*get_map(int fd, void *p[2])
 	outp->rotx = ROTX;
 	outp->roty = ROTY;
 	outp->len = 0;
-	outp->zoom = sqrt(HEIGHT * HEIGHT + WIDTH * WIDTH) / (D_P * 2);
+	outp->zoom = (PYTH(HEIGHT, WIDTH) / (2 * D_P));
 	outp->detail = 0;
 	outp->fd = fd;
 	outp->color = DEF_COL;
@@ -66,17 +66,17 @@ t_info				*get_map(int fd, void *p[2])
 	return (outp);
 }
 
-void			free_all(t_info *inf)
+void				free_all(t_info *inf)
 {
-	t_pt		*horizontal;
-	t_pt		*vertical;
-	t_pt		*swapper;
+	t_pt			*horizontal;
+	t_pt			*vertical;
+	t_pt			*swapper;
 
 	vertical = inf->first_pt;
 	while (vertical)
 	{
 		horizontal = vertical;
-		while(horizontal)
+		while (horizontal)
 		{
 			swapper = horizontal->r;
 			free(horizontal);
@@ -84,4 +84,50 @@ void			free_all(t_info *inf)
 		}
 		vertical = vertical->b;
 	}
+}
+
+static void			link_chain(t_pt *inp)
+{
+	t_pt			*scroller_u;
+	t_pt			*scroller_d;
+
+	while (inp)
+	{
+		scroller_u = inp;
+		scroller_d = inp->b;
+		while (scroller_u)
+		{
+			scroller_u->b = scroller_d;
+			scroller_u = scroller_u->r;
+			if (scroller_d)
+				scroller_d = scroller_d->r;
+		}
+		inp = inp->b;
+	}
+}
+
+t_pt				*to_pt_list(t_list *inp, t_info *toset)
+{
+	t_pt			*first;
+	t_pt			*layers;
+	t_list			*prev;
+	int				i;
+
+	i = 0;
+	prev = inp;
+	if (!(first = chain_layer((int *)inp->content, 0, toset)))
+		return (0);
+	inp = inp->next;
+	layers = first;
+	while (inp && ++i)
+	{
+		if (!(layers->b = chain_layer((int *)inp->content, i, toset)))
+			return (0);
+		layers = layers->b;
+		free(prev);
+		prev = inp;
+		inp = inp->next;
+	}
+	link_chain(first);
+	return (first);
 }

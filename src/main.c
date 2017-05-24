@@ -6,7 +6,7 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/29 12:37:51 by vboivin           #+#    #+#             */
-/*   Updated: 2017/04/26 19:27:10 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/05/24 18:04:02 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void			exits(int exnu, t_info *inf)
 	else if (exnu == 5)
 		ft_putstr("GNL failed, somehow... Curse you GNL !");
 	else if (exnu == 6)
-		ft_putstr("Invalid input\n");
+		ft_putstr("Invalid input, or not enough memory.\n");
 	else
 	{
 		ft_putstr("error #");
@@ -45,19 +45,19 @@ static void		redraw_quad(t_info *inf, int kc)
 	mlx_clear_window(inf->mid, inf->wid);
 	if (kc == 125 || kc == 126 || kc == 65362 || kc == 65364)
 		inf->z_coef += (kc == 126 || kc == 65364) ? -Z_DIFF : Z_DIFF;
-	if (kc == 65365 ||kc == 65366)
-		inf->roty = (kc == 65366) ?
-			(inf->roty - ANG_DIFF)%360 : (inf->roty + ANG_DIFF)%360;
+	if (kc == 65365 || kc == 65366 || kc == 116 || kc == 121)
+		inf->roty = (kc == 65366 || kc == 116) ?
+			(inf->roty - ANG_DIFF) % 360 : (inf->roty + ANG_DIFF) % 360;
 	if (kc == 123 || kc == 124 || kc == 65361 || kc == 65363)
 		inf->rotx = (kc == 123 || kc == 65361) ?
 			(inf->rotx - ANG_DIFF) % 360 : (inf->rotx + ANG_DIFF) % 360;
-	if (kc == 0 || kc == 2 || kc == 113 ||kc == 100)
-		inf->margin_l += (kc == 0 ||kc == 113) ? -MAR_DIFF: MAR_DIFF;
+	if (kc == 0 || kc == 2 || kc == 113 || kc == 100)
+		inf->margin_l += (kc == 0 || kc == 113) ? -MAR_DIFF : MAR_DIFF;
 	if (kc == 1 || kc == 13 || kc == 115 || kc == 122)
 		inf->margin_t += (kc == 13 || kc == 122) ? -MAR_DIFF : MAR_DIFF;
-	if (kc == 119 || kc == 120)
-		inf->zoom += (kc == 119) ? -ZOOM_DIFF : ZOOM_DIFF;
-	if (kc == 61)
+	if (kc == 119 || kc == 120 || kc == 6 || kc == 7)
+		inf->zoom += (kc == 119 || kc == 6) ? -ZOOM_DIFF : ZOOM_DIFF;
+	if (kc == 61 || kc == 30)
 		inf->color = (inf->color == DEF_COL) ? DEF_COL_SEC : DEF_COL;
 	inf->detail = (kc == 42) ? (inf->detail + 1) % 2 : inf->detail;
 	inf->zoom = inf->zoom < 0 ? 0 : inf->zoom;
@@ -89,9 +89,10 @@ int				main(int ac, char **av)
 	p[MLXID] = mlx_init();
 	p[WINID] = mlx_new_window(p[MLXID], WIDTH, HEIGHT, TITLE);
 	if (!(inf = get_map(fildes, p)))
-		exits(1000, NULL);
+		exits(6, NULL);
+	create_image(inf);
 	draw_grid(inf);
 	set_menu(inf);
-	mlx_key_hook(p[WINID], pull_event, inf);
+	mlx_hook(p[WINID], 2, 3, pull_event, inf);
 	mlx_loop(p[MLXID]);
 }
