@@ -6,7 +6,7 @@
 /*   By: vboivin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/29 12:37:51 by vboivin           #+#    #+#             */
-/*   Updated: 2017/05/24 18:44:29 by vboivin          ###   ########.fr       */
+/*   Updated: 2017/06/09 14:31:11 by vboivin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void			exits(int exnu, t_info *inf)
 	if (exnu == 2)
 		ft_putstr("You just forgot to put any arguments. Smartass\n");
 	else if (exnu == 3)
-		ft_putstr("Y u leav :(\n");
+		ft_putstr("Exiting.\n");
 	else if (exnu == 4)
 		ft_putstr("Memory Allocation error (5)\n");
 	else if (exnu == 5)
